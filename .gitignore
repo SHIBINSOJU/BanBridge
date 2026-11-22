@@ -1,0 +1,21 @@
+# Maven
+target/
+build/
+
+# Decompiler files
+cfr.jar
+recovered-src/
+recovered-resources/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Previous Git backups
+.git-backup-*/

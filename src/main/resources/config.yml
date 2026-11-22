@@ -1,0 +1,73 @@
+# BanBridge 2.0 Configuration
+# ShotDevs - Minecraft <-> Discord Moderation Synchronization
+
+discord:
+  enabled: true
+  bot-token: "YOUR_BOT_TOKEN_HERE"
+  guild-id: "YOUR_GUILD_ID_HERE"
+  staff-roles: []
+
+# Discord channel routing for notifications
+channels:
+  bans: "CHANNEL_ID"
+  mutes: "CHANNEL_ID"
+  warnings: "CHANNEL_ID"
+  kicks: "CHANNEL_ID"
+  other: "CHANNEL_ID"
+
+server:
+  name: "Survival"
+  timezone: "Asia/Kolkata"
+
+notifications:
+  minecraft-to-discord: true
+  discord-to-minecraft: false
+
+  bans: true
+  unbans: true
+  ip-bans: true
+  mutes: true
+  unmutes: true
+  warnings: true
+  kicks: true
+  freezes: true
+  unfreezes: true
+  jails: true
+  unjails: true
+
+  discord-bans: true
+  discord-unbans: true
+  discord-kicks: true
+  discord-timeouts: true
+  discord-timeout-removals: true
+
+integrations:
+  litebans: true
+  advancedban: true
+  libertybans: true
+  essentialsx: true
+  cmi: true
+
+storage:
+  type: sqlite
+  mysql:
+    enabled: false
+    host: localhost
+    port: 3306
+    database: banbridge
+    username: root
+    password: ""
+
+appearance:
+  footer: "BanBridge | ShotDevs Moderation System"
+
+privacy:
+  hide-ip-addresses: true
+  show-player-uuid: true
+  show-moderator-uuid: false
+
+performance:
+  async-processing: true
+  retry-failed-messages: true
+  max-retries: 3
+  queue-limit: 10000

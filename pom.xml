@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.shotdevs</groupId>
+    <artifactId>banbridge</artifactId>
+    <version>2.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>BanBridge 2.0</name>
+    <description>Complete Minecraft to Discord Moderation Synchronization System</description>
+    <url>https://shotdevs.com</url>
+    <organization>
+        <name>ShotDevs</name>
+    </organization>
+
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper-api.version>1.21.1-R0.1-SNAPSHOT</paper-api.version>
+        <jda.version>6.7.0</jda.version>
+        <sqlite-jdbc.version>3.49.0.0</sqlite-jdbc.version>
+        <hikaricp.version>5.1.0</hikaricp.version>
+        <!-- Note: the MySQL JDBC driver is operator-supplied (place mysql-connector-java in lib/ or the server classpath).
+             See README.md for MySQL/MariaDB setup. -->
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!--
+          All dependencies are declared with <scope>system</scope> and point to jars committed
+          under lib/ so the project builds fully offline. At runtime these libraries must be
+          available on the server classpath (Paper provides paper-api classes itself).
+        -->
+
+        <!-- Paper API (compile-time only; provided by the server at runtime) -->
+        <dependency>
+            <groupId>io.papermc.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>${paper-api.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/paper-api.jar</systemPath>
+        </dependency>
+
+        <!-- JDA - Discord API (Components V2) -->
+        <dependency>
+            <groupId>net.dv8tion</groupId>
+            <artifactId>JDA</artifactId>
+            <version>${jda.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/jda.jar</systemPath>
+        </dependency>
+
+        <!-- SQLite JDBC (default storage) -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>${sqlite-jdbc.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/sqlite-jdbc.jar</systemPath>
+        </dependency>
+
+        <!-- HikariCP connection pooling -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>${hikaricp.version}</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/hikaricp.jar</systemPath>
+        </dependency>
+
+        <!-- slf4j API (stub jar committed under lib/; replace with real slf4j if desired) -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.19</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/slf4j-api-stub.jar</systemPath>
+        </dependency>
+
+        <!-- Adventure API stub (compile-time only; server provides the real API) -->
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api-stub</artifactId>
+            <version>1.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/adventure-api-stub.jar</systemPath>
+        </dependency>
+
+        <!-- Bungee Chat (BaseComponent types referenced by Paper's CommandSender) -->
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.21-R0.2-deprecated+build.21</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/bungeecord-chat.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>21</release>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.5.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

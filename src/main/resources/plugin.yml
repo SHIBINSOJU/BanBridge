@@ -1,0 +1,37 @@
+name: BanBridge
+version: 2.0.0
+main: com.shotdevs.banbridge.BanBridge
+api-version: '1.21'
+prefix: BanBridge
+author: ShotDevs
+description: Complete Minecraft <-> Discord Moderation Synchronization System
+softdepend:
+  - LiteBans
+  - AdvancedBan
+  - LibertyBans
+  - EssentialsX
+  - CMI
+
+commands:
+  banbridge:
+    description: Main BanBridge administration command
+    usage: /banbridge <help|reload|status|integrations|test|history|lookup|stats|queue|version>
+    permission: banbridge.admin
+    aliases: [bb]
+
+permissions:
+  banbridge.admin:
+    description: Full access to all BanBridge commands
+    default: op
+  banbridge.history:
+    description: View player punishment history
+    default: op
+  banbridge.stats:
+    description: View staff moderation statistics
+    default: op
+  banbridge.reload:
+    description: Reload BanBridge configuration
+    default: op
+  banbridge.test:
+    description: Send test Discord notifications
+    default: op
