@@ -1,6 +1,3 @@
-/*
- * Decompiled with CFR 0.152.
- */
 package com.shotdevs.banbridge.punishment;
 
 public enum PunishmentType {
@@ -16,7 +13,7 @@ public enum PunishmentType {
     CHAT_RESTRICTION("Chat Restriction", "chatrestriction"),
     WARNING("Warning", "warn"),
     WARNING_REMOVAL("Warning Removal", "warnremove"),
-    WARNING_ESCALATION("Warning Escalation", "warne escalation"),
+    WARNING_ESCALATION("Warning Escalation", "warnescalation"),
     KICK("Kick", "kick"),
     FREEZE("Freeze", "freeze"),
     UNFREEZE("Unfreeze", "unfreeze"),
@@ -36,7 +33,7 @@ public enum PunishmentType {
     private final String displayName;
     private final String commandAlias;
 
-    private PunishmentType(String displayName, String commandAlias) {
+    PunishmentType(String displayName, String commandAlias) {
         this.displayName = displayName;
         this.commandAlias = commandAlias;
     }
@@ -50,15 +47,20 @@ public enum PunishmentType {
     }
 
     public boolean isRevocation() {
-        return this == UNBAN || this == IP_UNBAN || this == UNMUTE || this == UNFREEZE || this == UNJAIL || this == WARNING_REMOVAL || this == DISCORD_UNBAN || this == DISCORD_TIMEOUT_REMOVAL;
+        return this == UNBAN || this == IP_UNBAN || this == UNMUTE || this == UNFREEZE
+                || this == UNJAIL || this == WARNING_REMOVAL || this == DISCORD_UNBAN
+                || this == DISCORD_TIMEOUT_REMOVAL;
     }
 
     public boolean isDiscordAction() {
-        return this == DISCORD_BAN || this == DISCORD_TEMP_BAN || this == DISCORD_UNBAN || this == DISCORD_KICK || this == DISCORD_TIMEOUT || this == DISCORD_TIMEOUT_REMOVAL || this == DISCORD_WARNING || this == DISCORD_ROLE_ACTION;
+        return this == DISCORD_BAN || this == DISCORD_TEMP_BAN || this == DISCORD_UNBAN
+                || this == DISCORD_KICK || this == DISCORD_TIMEOUT || this == DISCORD_TIMEOUT_REMOVAL
+                || this == DISCORD_WARNING || this == DISCORD_ROLE_ACTION;
     }
 
     public boolean hasDuration() {
-        return this == TEMP_BAN || this == TEMP_IP_BAN || this == TEMP_MUTE || this == DISCORD_TEMP_BAN || this == DISCORD_TIMEOUT;
+        return this == TEMP_BAN || this == TEMP_IP_BAN || this == TEMP_MUTE
+                || this == DISCORD_TEMP_BAN || this == DISCORD_TIMEOUT;
     }
 
     public boolean isPermanent() {
@@ -66,21 +68,21 @@ public enum PunishmentType {
     }
 
     public Category getCategory() {
-        return switch (this.ordinal()) {
-            default -> throw new MatchException(null, null);
-            case 0, 1, 2, 3, 4, 5 -> Category.BAN;
-            case 6, 7, 8, 9, 10, 11, 12 -> Category.CHAT;
-            case 13, 14, 15, 16, 17, 18, 19 -> Category.PLAYER;
-            case 20, 21, 22, 23, 24, 25, 26, 27 -> Category.DISCORD;
-        };
+        // ordinals 0-5: BAN, TEMP_BAN, IP_BAN, TEMP_IP_BAN, UNBAN, IP_UNBAN
+        // ordinals 6-12: PERM_MUTE, TEMP_MUTE, UNMUTE, CHAT_RESTRICTION, WARNING, WARNING_REMOVAL, WARNING_ESCALATION
+        // ordinals 13-19: KICK, FREEZE, UNFREEZE, JAIL, UNJAIL, PLAYER_LOCKDOWN, COMBAT_RESTRICTION
+        // ordinals 20-27: DISCORD_BAN ... DISCORD_ROLE_ACTION
+        int ord = this.ordinal();
+        if (ord <= 5) return Category.BAN;
+        if (ord <= 12) return Category.CHAT;
+        if (ord <= 19) return Category.PLAYER;
+        return Category.DISCORD;
     }
 
-    public static enum Category {
+    public enum Category {
         BAN,
         CHAT,
         PLAYER,
-        DISCORD;
-
+        DISCORD
     }
 }
-

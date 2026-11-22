@@ -1,27 +1,17 @@
-/*
- * Decompiled with CFR 0.152.
- * 
- * Could not load the following classes:
- *  net.dv8tion.jda.api.components.MessageTopLevelComponent
- *  net.dv8tion.jda.api.components.container.Container
- *  net.dv8tion.jda.api.entities.channel.concrete.TextChannel
- *  net.dv8tion.jda.api.requests.restaction.MessageCreateAction
- */
 package com.shotdevs.banbridge.discord;
 
 import com.shotdevs.banbridge.BanBridge;
 import com.shotdevs.banbridge.configuration.ConfigManager;
 import com.shotdevs.banbridge.database.PunishmentRepository;
-import com.shotdevs.banbridge.discord.ComponentV2Builder;
-import com.shotdevs.banbridge.discord.DiscordManager;
 import com.shotdevs.banbridge.punishment.Punishment;
 import com.shotdevs.banbridge.punishment.PunishmentType;
-import java.util.Optional;
-import java.util.logging.Level;
 import net.dv8tion.jda.api.components.MessageTopLevelComponent;
 import net.dv8tion.jda.api.components.container.Container;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
+
+import java.util.Optional;
+import java.util.logging.Level;
 
 public class DiscordNotifier {
     private final BanBridge plugin;
@@ -70,67 +60,47 @@ public class DiscordNotifier {
             }
             this.notify(p);
             return true;
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.plugin.getLogger().log(Level.WARNING, "Failed to send queued notification " + punishmentId, ex);
             return false;
         }
     }
 
     private Container build(Punishment p) {
-        return switch (p.getType()) {
-            case PunishmentType.BAN, PunishmentType.TEMP_BAN, PunishmentType.IP_BAN, PunishmentType.TEMP_IP_BAN -> {
-                Container var2_2;
-                yield var2_2 = ComponentV2Builder.ban(p);
-            }
-            case PunishmentType.PERM_MUTE, PunishmentType.TEMP_MUTE -> {
-                Container var2_3;
-                yield var2_3 = ComponentV2Builder.mute(p);
-            }
-            case PunishmentType.WARNING -> {
-                Container var2_4;
+        switch (p.getType()) {
+            case BAN:
+            case TEMP_BAN:
+            case IP_BAN:
+            case TEMP_IP_BAN:
+                return ComponentV2Builder.ban(p);
+            case PERM_MUTE:
+            case TEMP_MUTE:
+                return ComponentV2Builder.mute(p);
+            case WARNING: {
                 int total = 0;
                 try {
                     total = this.repository.countWarnings(p.getTargetUsername()).join();
-                }
-                catch (Exception var4_14) {
-                    // empty catch block
-                }
-                yield var2_4 = ComponentV2Builder.warning(p, total);
+                } catch (Exception ignored) {}
+                return ComponentV2Builder.warning(p, total);
             }
-            case PunishmentType.KICK -> {
-                Container var2_5;
-                yield var2_5 = ComponentV2Builder.kick(p);
-            }
-            case PunishmentType.FREEZE -> {
-                Container var2_6;
-                yield var2_6 = ComponentV2Builder.freeze(p);
-            }
-            case PunishmentType.UNFREEZE -> {
-                Container var2_7;
-                yield var2_7 = ComponentV2Builder.unfreeze(p);
-            }
-            case PunishmentType.JAIL -> {
-                Container var2_8;
-                yield var2_8 = ComponentV2Builder.jail(p);
-            }
-            case PunishmentType.UNJAIL -> {
-                Container var2_9;
-                yield var2_9 = ComponentV2Builder.unjail(p);
-            }
-            case PunishmentType.UNBAN, PunishmentType.IP_UNBAN -> {
-                Container var2_10;
-                yield var2_10 = ComponentV2Builder.unban(p, p.getReason(), p.getDuration());
-            }
-            case PunishmentType.UNMUTE -> {
-                Container var2_11;
-                yield var2_11 = ComponentV2Builder.unmute(p, p.getReason(), p.getDuration());
-            }
-            default -> {
-                Container var2_12;
-                yield var2_12 = null;
-            }
-        };
+            case KICK:
+                return ComponentV2Builder.kick(p);
+            case FREEZE:
+                return ComponentV2Builder.freeze(p);
+            case UNFREEZE:
+                return ComponentV2Builder.unfreeze(p);
+            case JAIL:
+                return ComponentV2Builder.jail(p);
+            case UNJAIL:
+                return ComponentV2Builder.unjail(p);
+            case UNBAN:
+            case IP_UNBAN:
+                return ComponentV2Builder.unban(p, p.getReason(), p.getDuration());
+            case UNMUTE:
+                return ComponentV2Builder.unmute(p, p.getReason(), p.getDuration());
+            default:
+                return null;
+        }
     }
 
     private void sendAsync(String channelId, Container data) {
@@ -143,30 +113,33 @@ public class DiscordNotifier {
             return;
         }
         TextChannel targetChannel = channel;
-        MessageCreateAction action = targetChannel.sendMessageComponents((MessageTopLevelComponent)data, new MessageTopLevelComponent[0]);
-        action.queue(sent -> this.plugin.getLogger().fine("Discord notification sent to " + targetChannel.getName()), ex -> this.plugin.getLogger().log(Level.WARNING, "Failed to send Discord notification", (Throwable)ex));
+        MessageCreateAction action = targetChannel.sendMessageComponents(
+                (MessageTopLevelComponent) data, new MessageTopLevelComponent[0]);
+        action.queue(
+                sent -> this.plugin.getLogger().fine("Discord notification sent to " + targetChannel.getName()),
+                ex -> this.plugin.getLogger().log(Level.WARNING, "Failed to send Discord notification", ex)
+        );
     }
 
     private String resolveChannel(PunishmentType type) {
-        return switch (type.getCategory()) {
-            default -> throw new MatchException(null, null);
-            case PunishmentType.Category.BAN -> this.config.getChannelBans();
-            case PunishmentType.Category.CHAT -> this.config.getChannelMutes();
-            case PunishmentType.Category.PLAYER -> this.config.getChannelKicks();
-            case PunishmentType.Category.DISCORD -> this.config.getChannelOther();
-        };
+        switch (type.getCategory()) {
+            case BAN: return this.config.getChannelBans();
+            case CHAT: return this.config.getChannelMutes();
+            case PLAYER: return this.config.getChannelKicks();
+            case DISCORD: return this.config.getChannelOther();
+            default: return this.config.getChannelOther();
+        }
     }
 
     private String resolveDiscordChannel(String category) {
-        return switch (category) {
-            case "bans" -> this.config.getChannelBans();
-            case "kicks" -> this.config.getChannelKicks();
-            default -> this.config.getChannelOther();
-        };
+        switch (category) {
+            case "bans": return this.config.getChannelBans();
+            case "kicks": return this.config.getChannelKicks();
+            default: return this.config.getChannelOther();
+        }
     }
 
     public TextChannel getChannel(String channelId) {
         return this.discord.getTextChannel(channelId);
     }
 }
-
