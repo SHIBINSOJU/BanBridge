@@ -15,7 +15,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +50,8 @@ public class PunishmentRepository {
                 ps.setString(9, punishment.getReason());
                 ps.setString(10, punishment.getDuration());
                 ps.setObject(11, punishment.getDurationSeconds());
-                ps.setObject(12, punishment.getIssuedAt() == null ? null : Timestamp.from(punishment.getIssuedAt()));
-                ps.setObject(13, punishment.getExpiryAt() == null ? null : Timestamp.from(punishment.getExpiryAt()));
+                ps.setString(12, punishment.getIssuedAt() == null ? null : punishment.getIssuedAt().toString());
+                ps.setString(13, punishment.getExpiryAt() == null ? null : punishment.getExpiryAt().toString());
                 ps.setString(14, punishment.getServerName());
                 ps.setString(15, punishment.getSource().name());
                 ps.setBoolean(16, punishment.isActive());
@@ -211,8 +210,10 @@ public class PunishmentRepository {
         if (muuid != null) {
             moderatorUuid = UUID.fromString(muuid);
         }
-        Instant issued = rs.getTimestamp("issued_at") == null ? null : rs.getTimestamp("issued_at").toInstant();
-        Instant expiry = rs.getTimestamp("expiry_at") == null ? null : rs.getTimestamp("expiry_at").toInstant();
+        String issuedStr = rs.getString("issued_at");
+        Instant issued = issuedStr == null ? null : Instant.parse(issuedStr);
+        String expiryStr = rs.getString("expiry_at");
+        Instant expiry = expiryStr == null ? null : Instant.parse(expiryStr);
         Long durationSeconds = rs.getObject("duration_seconds", Long.class);
         return new Punishment(rs.getString("id"), type, rs.getString("target_username"), targetUuid, rs.getString("target_discord_id"), rs.getString("moderator_username"), moderatorUuid, rs.getString("moderator_discord_id"), rs.getString("reason"), rs.getString("duration"), durationSeconds, issued, expiry, rs.getString("server_name"), source, rs.getBoolean("active"), rs.getString("evidence_url"), rs.getBoolean("discord_notified"));
     }

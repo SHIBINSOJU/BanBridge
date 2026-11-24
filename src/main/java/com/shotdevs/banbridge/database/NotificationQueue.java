@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +50,7 @@ public class NotificationQueue {
             try (Connection conn = this.db.getConnection();
                  PreparedStatement ps = conn.prepareStatement(sql);){
                 ps.setString(1, payloadKey);
-                ps.setObject(2, Timestamp.from(Instant.now()));
+                ps.setString(2, Instant.now().toString());
                 ps.executeUpdate();
             }
             catch (SQLException ex) {
