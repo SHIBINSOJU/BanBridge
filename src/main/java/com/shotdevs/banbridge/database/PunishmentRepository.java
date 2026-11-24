@@ -214,7 +214,8 @@ public class PunishmentRepository {
         Instant issued = issuedStr == null ? null : Instant.parse(issuedStr);
         String expiryStr = rs.getString("expiry_at");
         Instant expiry = expiryStr == null ? null : Instant.parse(expiryStr);
-        Long durationSeconds = rs.getObject("duration_seconds", Long.class);
+        Object rawDuration = rs.getObject("duration_seconds");
+        Long durationSeconds = (rawDuration == null) ? null : rs.getLong("duration_seconds");
         return new Punishment(rs.getString("id"), type, rs.getString("target_username"), targetUuid, rs.getString("target_discord_id"), rs.getString("moderator_username"), moderatorUuid, rs.getString("moderator_discord_id"), rs.getString("reason"), rs.getString("duration"), durationSeconds, issued, expiry, rs.getString("server_name"), source, rs.getBoolean("active"), rs.getString("evidence_url"), rs.getBoolean("discord_notified"));
     }
 
